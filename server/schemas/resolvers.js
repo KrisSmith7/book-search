@@ -40,10 +40,10 @@ const resolvers = {
           throw new AuthenticationError("Can't find this user");
         }
     
-        const correctPw = await user.isCorrectPassword(body.password);
+        const correctPw = await user.isCorrectPassword(password);
     
         if (!correctPw) {
-          throw new AuthenticationError('Incorrect password!');
+          throw new AuthenticationError('Incorrect credentials!');
         }
         const token = signToken(user);
         return { token, user };
