@@ -36,8 +36,8 @@ const resolvers = {
    
   // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
   // {body} is destructured req.body
-  login: async (parent, { username, email, password }) => {
-        const user = await User.findOne({ $or: [{ username: username }, { email: email }] });
+  login: async (parent, {email, password }) => {
+        const user = await User.findOne(email);
         if (!user) {
           throw new AuthenticationError("Can't find this user");
         }
