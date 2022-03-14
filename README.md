@@ -5,13 +5,16 @@ This purpose of this project is to take a fully functioning Google Books API sea
 
 Starter code for this project can be found [here](https://github.com/coding-boot-camp/solid-broccoli).
 
+---
 ## Application
 
 Click [here](https://booksearching-app.herokuapp.com/) to visit deployed application.
 
+![screenshot of application](./assets/images/screenshot.png)
+
+
 [Link](https://github.com/KrisSmith7/book-search) to Github repo.
 
+---
 
-
-
-
+Contribution and refactoring done by KrisSmith7.
