@@ -15,8 +15,10 @@ const resolvers = {
 
         me: async(parent, args, context) => {
           if (context.user) {
-            return User.findOne({_id:context.user._id}).populate('savedBooks');
+            const userData = User.findOne({_id:context.user._id}).populate('savedBooks');
+          return userData;
           }
+          throw new AuthenticationError('You are not logged in.')
         }
     },
 
@@ -52,16 +54,20 @@ const resolvers = {
   // user comes from `req.user` created in the auth middleware function
  saveBook: async (parent, args, context) => {
       if (context.user){
-      return User.findOneAndUpdate(
+      const updatedUser = await User.findByIdandUpdate(
         { _id: context.user._id },
         { $addToSet: { savedBooks: args } },
+        {new: true}
       );
-      }},
+      return updatedUser;
+      }
+    throw new AuthenticationError('You must be logged in to save a book!')
+    },
    
   // remove a book from `savedBooks`
   removeBook: async (parent, {bookId}, context ) => {
     if (context.user) {
-       return User.findOneAndUpdate(
+       return User.findByIdAndUpdate(
         { _id: context.user._id },
         { $pull: { savedBooks: { bookId} } },
         { new: true }
