@@ -15,7 +15,10 @@ const resolvers = {
 
         me: async(parent, args, context) => {
           if (context.user) {
-            const userData = User.findOne({_id:context.user._id}).populate('savedBooks');
+            const userData = await User.findOne({_id:context.user._id})
+            .select('-__v -password')
+            .populate('savedBooks')
+            
           return userData;
           }
           throw new AuthenticationError('You are not logged in.')
@@ -25,7 +28,7 @@ const resolvers = {
     Mutation:{
        // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
   addUser: async(parent, { username, email, password, error}) => {
-    const user = await User.create({ username, email, password});
+    const user = await User.create({username, email, password});
 
     if (!user) {
       console.log({ message: 'Something is wrong!' });
@@ -37,12 +40,12 @@ const resolvers = {
   // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
   // {body} is destructured req.body
   login: async (parent, {email, password }) => {
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
         if (!user) {
           throw new AuthenticationError("Can't find this user");
         }
     
-        const correctPw = await user.isCorrectPassword(password);
+        const correctPw = await user.isCorrectPassword({password});
     
         if (!correctPw) {
           throw new AuthenticationError('Incorrect credentials!');
