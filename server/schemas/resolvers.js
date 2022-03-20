@@ -4,21 +4,12 @@ const {AuthenticationError} = require ('apollo-server-express')
 
 const resolvers = {
     Query: {
-
-        user: async(parent, {args}) => {
-          return User.findOne({args}).populate('savedBooks')
-        },
-
-        users: async () => {
-          return User.find({})
-        },
-
         me: async(parent, args, context) => {
           if (context.user) {
             const userData = await User.findOne({_id:context.user._id})
             .select('-__v -password')
             .populate('savedBooks')
-            
+
           return userData;
           }
           throw new AuthenticationError('You are not logged in.')
@@ -27,12 +18,12 @@ const resolvers = {
 
     Mutation:{
        // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
-  addUser: async(parent, { username, email, password, error}) => {
-    const user = await User.create({username, email, password});
+  addUser: async(parent, args) => {
+    const user = await User.create(args);
 
-    if (!user) {
-      console.log({ message: 'Something is wrong!' });
-    }
+    // if (!user) {
+    //   console.log({ message: 'Something is wrong!' });
+    // }
     const token = signToken(user);
     return { token, user };
   },
@@ -55,11 +46,11 @@ const resolvers = {
       },
   // save a book to a user's `savedBooks` field by adding it to the set (to prevent duplicates)
   // user comes from `req.user` created in the auth middleware function
- saveBook: async (parent, args, context) => {
+ saveBook: async (parent, {input}, context) => {
       if (context.user){
       const updatedUser = await User.findByIdandUpdate(
         { _id: context.user._id },
-        { $addToSet: { savedBooks: args } },
+        { $push: { savedBooks: input } },
         {new: true}
       );
       return updatedUser;
